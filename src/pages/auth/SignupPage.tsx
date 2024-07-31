@@ -5,6 +5,9 @@ import { options } from "@/constant/constant";
 import { signUpSchema } from "@/schema/authSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { axiosInstance } from "@/utils/config";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
   username: "",
@@ -15,6 +18,7 @@ const initialState = {
 };
 
 const SignupPage: React.FC = () => {
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -25,10 +29,15 @@ const SignupPage: React.FC = () => {
     defaultValues: initialState,
   });
 
-  const onSubmitForm = (data: any) => {
-    console.log(data, "data");
+  const onSubmitForm = async (payload: any) => {
+    const { data } = await axiosInstance({
+      url: "/users/register",
+      method: "post",
+      data: payload,
+    });
     reset();
-    console.log(reset(), "rest");
+    toast.success(data?.message);
+    navigate("/login");
   };
 
   return (

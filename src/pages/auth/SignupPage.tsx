@@ -23,30 +23,9 @@ const SignupPage: React.FC = () => {
     resolver: yupResolver(signUpSchema),
     defaultValues: initialState,
   });
-  // console.log(handleSubmit(onSubmit()));
-  // const handleChange = (event: any) => {
-  //   if (typeof event !== "string") {
-  //     const name = event.target.name;
-  //     const value = event.target.value;
-  //     setData({ ...data, [name]: value });
-  //   }
-
-  //   if (typeof event === "string") {
-  //     setData({ ...data, ["role"]: event });
-  //   }
-  // };
 
   const onSubmitForm = (data: any) => {
     console.log(data, "data");
-    // try {
-    //   await signUpSchema.validate(data, { abortEarly: false });
-    // } catch (error: any) {
-    //   const validationErr: { [key: string]: string } = {};
-    //   error.inner.forEach((err: any) => {
-    //     validationErr[err.path] = err.message;
-    //   });
-    //   setErrors(validationErr);
-    // }
   };
 
   return (

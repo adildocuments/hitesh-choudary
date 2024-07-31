@@ -19,6 +19,7 @@ const SignupPage: React.FC = () => {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(signUpSchema),
     defaultValues: initialState,
@@ -26,6 +27,8 @@ const SignupPage: React.FC = () => {
 
   const onSubmitForm = (data: any) => {
     console.log(data, "data");
+    reset();
+    console.log(reset(), "rest");
   };
 
   return (

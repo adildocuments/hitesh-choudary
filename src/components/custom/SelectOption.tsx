@@ -39,7 +39,7 @@ const SelectOption: React.FC<SelectOptionProps> = ({
         <Controller
           name={name} // Ensure name is provided here
           control={control}
-          render={({ field: { onChange, onBlur, value, ref } }) => (
+          render={({ field: { onChange, value } }) => (
             <Select
               value={value}
               onValueChange={onChange} // Ensure this matches how your Select component handles changes

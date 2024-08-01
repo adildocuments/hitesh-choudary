@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { axiosInstance } from "@/utils/config";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 
 const initialState = {
   username: "",
@@ -19,6 +20,16 @@ const initialState = {
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
+  const mutation = useMutation({
+    mutationFn: async (payload) => {
+      const { data } = await axiosInstance({
+        url: "/users/register",
+        method: "post",
+        data: payload,
+      });
+      return data;
+    },
+  });
   const {
     handleSubmit,
     control,
@@ -29,15 +40,24 @@ const SignupPage: React.FC = () => {
     defaultValues: initialState,
   });
 
-  const onSubmitForm = async (payload: any) => {
-    const { data } = await axiosInstance({
-      url: "/users/register",
-      method: "post",
-      data: payload,
+  const onSubmitForm = (payload: any) => {
+    console.log(payload, "payload");
+    mutation.mutate(payload, {
+      onSuccess(data): any {
+        console.log(data, "success-data");
+      },
+      onError(error) {
+        console.log(error, "error-on error");
+      },
     });
-    reset();
-    toast.success(data?.message);
-    navigate("/login");
+    // const { data } = await axiosInstance({
+    //   url: "/users/register",
+    //   method: "post",
+    //   data: payload,
+    // });
+    // reset();
+    // toast.success(data?.message);
+    // navigate("/login");
   };
 
   return (

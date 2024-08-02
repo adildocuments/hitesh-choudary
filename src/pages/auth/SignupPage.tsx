@@ -5,12 +5,19 @@ import { options } from "@/constant/constant";
 import { signUpSchema } from "@/schema/authSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { axiosInstance } from "@/utils/config";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { signUpUser } from "@/query/auth/useSignupReactQuery";
+import { toast } from "sonner";
 
-const initialState = {
+type signUpType = {
+  username: string;
+  email: string;
+  password: string;
+  cpassword: string;
+  role: string;
+};
+const initialState: signUpType = {
   username: "",
   email: "",
   password: "",
@@ -21,14 +28,7 @@ const initialState = {
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const mutation = useMutation({
-    mutationFn: async (payload) => {
-      const { data } = await axiosInstance({
-        url: "/users/register",
-        method: "post",
-        data: payload,
-      });
-      return data;
-    },
+    mutationFn: signUpUser,
   });
   const {
     handleSubmit,
@@ -40,24 +40,11 @@ const SignupPage: React.FC = () => {
     defaultValues: initialState,
   });
 
-  const onSubmitForm = (payload: any) => {
-    console.log(payload, "payload");
-    mutation.mutate(payload, {
-      onSuccess(data): any {
-        console.log(data, "success-data");
-      },
-      onError(error) {
-        console.log(error, "error-on error");
-      },
-    });
-    // const { data } = await axiosInstance({
-    //   url: "/users/register",
-    //   method: "post",
-    //   data: payload,
-    // });
-    // reset();
-    // toast.success(data?.message);
-    // navigate("/login");
+  const onSubmitForm = async (payload: any) => {
+    const response = await mutation.mutateAsync(payload);
+    reset();
+    toast.success(response?.data?.message);
+    navigate("/login");
   };
 
   return (

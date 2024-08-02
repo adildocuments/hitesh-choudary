@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { signUpUser } from "@/query/auth/useSignupReactQuery";
 import { toast } from "sonner";
+// import { Variable } from "lucide-react";
 
 type signUpType = {
   username: string;
@@ -29,6 +30,11 @@ const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: signUpUser,
+    onSuccess: (response) => {
+      reset();
+      toast.success(response?.data?.message);
+      navigate("/login");
+    },
   });
   const {
     handleSubmit,
@@ -40,12 +46,14 @@ const SignupPage: React.FC = () => {
     defaultValues: initialState,
   });
 
-  const onSubmitForm = async (payload: any) => {
-    const response = await mutation.mutateAsync(payload);
-    reset();
-    toast.success(response?.data?.message);
-    navigate("/login");
-  };
+  // const onSubmitForm = async (payload: any) => {
+  //   const response = await mutation.mutateAsync(payload);
+  //   reset();
+  //   toast.success(response?.data?.message);
+  //   navigate("/login");
+  // };
+
+  const onSubmitForm = (payload: any) => mutation.mutateAsync(payload);
 
   return (
     <>

@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { ErrorResponse } from "@/types/errorSchema";
 import { unexpectedMsg } from "@/messages/errorMessage";
+import localForage from "localforage";
 
 export const axiosInstance = axios.create({
   baseURL: "https://api.freeapi.app/api/v1",
@@ -29,3 +30,13 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const myStore = localForage.createInstance({
+  driver: [localForage.INDEXEDDB, localForage.WEBSQL, localForage.LOCALSTORAGE],
+  name: "react-database",
+  version: 1.0,
+  size: 1024 * 1024 * 10,
+  storeName: "React_Store",
+  description:
+    "We can store the access token and refresh token to validate the user",
+});

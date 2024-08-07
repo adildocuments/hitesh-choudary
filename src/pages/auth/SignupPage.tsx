@@ -5,11 +5,8 @@ import { options } from "@/constant/constant";
 import { signUpSchema } from "@/schema/authSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { signUpUser } from "@/query/auth/useSignupReactQuery";
-import { toast } from "sonner";
-// import { Variable } from "lucide-react";
+import useSignupQuery from "@/query/auth/useSignupQuery";
+import { Link } from "react-router-dom";
 
 type signUpType = {
   username: string;
@@ -18,6 +15,7 @@ type signUpType = {
   cpassword: string;
   role: string;
 };
+
 const initialState: signUpType = {
   username: "",
   email: "",
@@ -27,33 +25,17 @@ const initialState: signUpType = {
 };
 
 const SignupPage: React.FC = () => {
-  const navigate = useNavigate();
-  const mutation = useMutation({
-    mutationFn: signUpUser,
-    onSuccess: (response) => {
-      reset();
-      toast.success(response?.data?.message);
-      navigate("/login");
-    },
-  });
+  const { mutateAsync } = useSignupQuery();
   const {
     handleSubmit,
     control,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(signUpSchema),
     defaultValues: initialState,
   });
 
-  // const onSubmitForm = async (payload: any) => {
-  //   const response = await mutation.mutateAsync(payload);
-  //   reset();
-  //   toast.success(response?.data?.message);
-  //   navigate("/login");
-  // };
-
-  const onSubmitForm = (payload: any) => mutation.mutateAsync(payload);
+  const onSubmitForm = (payload: any) => mutateAsync(payload);
 
   return (
     <>
@@ -104,7 +86,10 @@ const SignupPage: React.FC = () => {
             error={errors?.role?.message}
           />
           <div className="flex justify-end">
-            <Button onClick={handleSubmit(onSubmitForm)}>Submit</Button>
+            <Button className="mx-2">
+              <Link to="/login">Login</Link>
+            </Button>
+            <Button onClick={handleSubmit(onSubmitForm)}>Signup</Button>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { BrowserRouter } from "react-router-dom";
-import IndexRoutes from "@/routes/indexRoutes";
+import IndexRoutes from "@/routes/IndexRoutes";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const queryClient = new QueryClient();

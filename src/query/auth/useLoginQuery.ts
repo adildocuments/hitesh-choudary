@@ -16,7 +16,6 @@ const useLoginQuery = () => {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: async (response) => {
-      console.log(response, "response");
       await myStore.setItem("auth", response?.data?.data);
       navigate("/app/dashboard");
     },

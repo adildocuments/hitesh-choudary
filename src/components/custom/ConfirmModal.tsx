@@ -8,12 +8,11 @@ interface ConfirmModalProps {
   deleteId?: string;
 }
 
-const deleteTodo = async (id: string) => {
+const deleteTodo = (id: string) => async () => {
   const response = await axiosInstance({
     method: "delete",
     url: `/todos/${id}`,
   });
-  console.log(response, "resposse update");
   return response;
 };
 
@@ -22,10 +21,10 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   deleteId,
 }) => {
   const queryClient = useQueryClient();
-  const handleDelete = async (deleteId: string) => {
+
+  const handleDelete = (deleteId: string) => async () => {
     try {
       const response = await mutateAsync(deleteId); // Pass the id to mutateAsync
-      console.log("Todo deleted successfully:", response);
       toast.success(response?.data?.message);
       handleToggle();
       queryClient.invalidateQueries({ queryKey: ["getTodo"] });
@@ -33,10 +32,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       console.error("Failed to delete todo:", error);
     }
   };
+
   const { mutateAsync } = useMutation({
-    mutationFn: (id: string) => deleteTodo(id),
-    // mutationFn: deleteTodo(id),
+    mutationFn: (id: string) => deleteTodo(id)(),
   });
+
   return (
     <>
       <h1 className="text-center text-4xl mb-3">
@@ -50,7 +50,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </Button>
         )}
         <Button
-          onClick={() => handleDelete(deleteId!)}
+          onClick={handleDelete(deleteId!)}
           variant={"outline"}
           className="mx-2"
         >

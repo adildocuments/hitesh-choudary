@@ -1,26 +1,94 @@
 import Modal from "@/components/custom/Modal";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import AddTodoModal, { TodoFormValues } from "./AddTodoModal";
 import { axiosInstance } from "@/utils/config";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import DataTable from "@/components/custom/DataTable";
+import TableAction from "@/components/custom/TableAction";
 
-interface TodoType extends TodoFormValues {
+export interface TodoType extends TodoFormValues {
   _id: string;
   isComplete: boolean;
   createdAt: string;
 }
 
+interface headerType {
+  label: string;
+  key?: string;
+  render?: (todo: TodoType) => JSX.Element | string;
+}
+
 const TodoContainer = () => {
+  const headers: headerType[] = [
+    {
+      label: "Title",
+      key: "title",
+    },
+    {
+      label: "Description",
+      key: "description",
+    },
+    {
+      label: "Created At",
+      key: "",
+      render: (todo: TodoType) => {
+        return dayjs(todo.createdAt).format("YYYY-MMM-DD hh:mm A");
+      },
+    },
+    {
+      label: "Status",
+      key: "",
+      render: (todo: TodoType) => {
+        return todo.isComplete ? "Incomplete" : "Completed";
+      },
+    },
+    {
+      label: "Action",
+      render: (todo: TodoType) => {
+        console.log(todo._id, "todo");
+        return <TableAction id={todo._id} />;
+      },
+      // <div className="flex cursor-pointer">
+      //   <div className="me-1">
+      //     <Modal
+      //       className="sm:max-w-[425px]"
+      //       trigger={
+      //         <Button className="ml-auto block">
+      //           <Pencil />
+      //         </Button>
+      //       }
+      //       render={(handleToggle) => {
+      //         return (
+      //           <AddTodoModal
+      //             handleToggle={handleToggle}
+      //             editId={todo._id}
+      //           />
+      //         );
+      //       }}
+      //     />
+      //   </div>
+      //   <div>
+      //     <Modal
+      //       className="sm:max-w-[425px]"
+      //       trigger={
+      //         <Button className="ml-auto block">
+      //           <Trash2 />
+      //         </Button>
+      //       }
+      //       render={(handleToggle) => {
+      //         return (
+      //           <ConfirmModal
+      //             handleToggle={handleToggle}
+      //             deleteId={todo._id}
+      //           />
+      //         );
+      //       }}
+      //     />
+      //   </div>
+      // </div>},
+    },
+  ];
   const getTodos = async <T extends TodoType>(): Promise<T[]> => {
     const response = await axiosInstance({
       method: "get",
@@ -49,33 +117,7 @@ const TodoContainer = () => {
       />
 
       <div className="p-5">
-        <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Title</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data?.map((todo: TodoType) => {
-              return (
-                <TableRow key={todo._id}>
-                  <TableCell className="font-medium">{todo.title}</TableCell>
-                  <TableCell>{todo.description}</TableCell>
-                  <TableCell className="font-medium">
-                    {dayjs(todo.createdAt).format("DD MMM YYYY hh:mm A")}
-                  </TableCell>
-                  <TableCell>
-                    {todo.isComplete ? "Completed" : "In completed"}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <DataTable headers={headers} rowData={data} />
       </div>
     </>
   );

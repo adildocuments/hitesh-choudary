@@ -15,6 +15,7 @@ interface ModalProps {
   render: renderType | JSX.Element;
   className?: string;
   closeBtn?: boolean;
+  // editId?: string;
 }
 // type overlayType = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 // const handleOverlay: overlayType = (e) => {
@@ -26,6 +27,7 @@ const Modal: React.FC<ModalProps> = ({
   trigger,
   closeBtn = true,
   className,
+  // editId,
 }) => {
   const [toggle, handleToggle] = useToggle(false);
   return (

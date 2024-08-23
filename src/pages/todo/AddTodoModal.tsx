@@ -7,9 +7,11 @@ import { InferType } from "yup";
 import { axiosInstance } from "@/utils/config";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface AddTodoModalProps {
   handleToggle: () => void;
+  editId?: string;
 }
 
 export type TodoFormValues = InferType<typeof todoSchema>;
@@ -19,40 +21,70 @@ const initialValue = {
   description: "",
 };
 
-const addTodo = async (payload: TodoFormValues) => {
+const addTodo = (editId: string) => async (payload: TodoFormValues) => {
   const response = await axiosInstance({
-    method: "post",
-    url: "/todos",
+    method: editId ? "patch" : "post",
+    url: editId ? `/todos/${editId}` : "/todos",
     data: payload,
   });
+  console.log(response, "resposse update");
   return response?.data;
 };
 
-const AddTodoModal: React.FC<AddTodoModalProps> = ({ handleToggle }) => {
+const getTodoById = (editId: string) => async () => {
+  const response = await axiosInstance({
+    method: "get",
+    url: `/todos/${editId}`,
+  });
+  return response?.data?.data;
+};
+
+const AddTodoModal: React.FC<AddTodoModalProps> = ({
+  handleToggle,
+  editId,
+}) => {
   const queryClient = useQueryClient();
+
   const { mutateAsync } = useMutation({
-    mutationFn: addTodo,
+    mutationFn: addTodo(editId!),
+  });
+
+  const { data } = useQuery({
+    queryKey: ["getTodo", editId],
+    queryFn: getTodoById(editId!),
+    enabled: !!editId,
   });
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: initialValue,
     resolver: yupResolver(todoSchema),
   });
 
+  useEffect(() => {
+    if (data) {
+      setValue("title", data?.title);
+      setValue("description", data?.description);
+    }
+  }, [data]);
+  // }, [data, editId]);
+
   const onSubmit = async (data: TodoFormValues) => {
     const res = await mutateAsync(data);
     toast.success(res?.message);
-    queryClient.invalidateQueries(["getTodo"]);
+    queryClient.invalidateQueries({ queryKey: ["getTodo"] });
     reset();
     handleToggle();
   };
   return (
     <>
-      <h1 className="text-center text-4xl mb-3">Add Todo</h1>
+      <h1 className="text-center text-4xl mb-3">
+        {editId ? "Edit Todo" : "Add Todo"}
+      </h1>
       <InputController
         placeholder="Title"
         label="Title"
@@ -76,7 +108,9 @@ const AddTodoModal: React.FC<AddTodoModalProps> = ({ handleToggle }) => {
             Cancel
           </Button>
         )}
-        <Button onClick={handleSubmit(onSubmit)}>Add</Button>
+        <Button onClick={handleSubmit(onSubmit)}>
+          {editId ? "Update" : "Add"}
+        </Button>
       </div>
     </>
   );

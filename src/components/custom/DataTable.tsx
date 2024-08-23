@@ -6,26 +6,32 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { TodoType } from "@/pages/todo/TodoContainer";
 
-type headerType = {
+type HeaderPropsType<T> = {
   label: string;
-  key?: keyof TodoType;
-  render: (todo: TodoType) => JSX.Element;
+  key?: keyof T; // Key that corresponds to the row data type
+  render?: (item: T) => JSX.Element | string; // Optional render function for custom rendering
 };
 
-interface dataTableType {
-  headers?: headerType[];
-  rowData?: TodoType[];
+interface HasId {
+  _id: string;
+}
+// Define the DataTable component to accept generic types
+interface DataTableProps<T extends HasId> {
+  headers: HeaderPropsType<T>[]; // Headers of type T
+  rowData: T[]; // Row data of type T
 }
 
-const DataTable = ({ headers, rowData }: dataTableType) => {
+const DataTable = <T extends HasId>({
+  headers,
+  rowData,
+}: DataTableProps<T>) => {
   return (
     <>
       <Table>
         <TableHeader>
           <TableRow>
-            {headers?.map((head: headerType, index: number) => {
+            {headers?.map((head, index) => {
               return <TableHead key={index}>{head.label}</TableHead>;
             })}
           </TableRow>
@@ -34,11 +40,13 @@ const DataTable = ({ headers, rowData }: dataTableType) => {
           {rowData?.map((row) => {
             return (
               <TableRow key={row._id}>
-                {headers?.map((head: headerType, index) => {
+                {headers?.map((head, index) => {
                   let rowKey = head.key;
                   return (
                     <TableCell key={index} className="font-medium">
-                      {rowKey ? row[rowKey] : head.render(row)}
+                      {rowKey
+                        ? (row[rowKey as keyof T] as unknown as React.ReactNode)
+                        : head.render?.(row)}
                     </TableCell>
                   );
                 })}

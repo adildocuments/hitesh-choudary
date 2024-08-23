@@ -4,7 +4,7 @@ import Modal from "./Modal";
 import AddTodoModal from "@/pages/todo/AddTodoModal";
 import ConfirmModal from "./ConfirmModal";
 
-const TableAction = ({ id }) => {
+const TableAction = ({ id }: { id: string }) => {
   return (
     <>
       <div className="flex cursor-pointer">

@@ -1,33 +1,25 @@
 import useToggle from "@/hook/useToggle";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import {
   Dialog,
   DialogContent,
   DialogOverlay,
   DialogTrigger,
 } from "../ui/dialog";
-import { DialogTitle } from "@radix-ui/react-dialog";
 
 type renderType = (handleToggle: () => void) => JSX.Element;
 interface ModalProps {
-  //   trigger: (handleToggle: () => void) => JSX.Element;
   trigger: JSX.Element;
-  //   render: JSX.Element;
   render: renderType | JSX.Element;
   className?: string;
   closeBtn?: boolean;
-  // editId?: string;
 }
-// type overlayType = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-// const handleOverlay: overlayType = (e) => {
-//   e.preventDefault();
-// };
 
 const Modal: React.FC<ModalProps> = ({
   render,
   trigger,
   closeBtn = true,
   className,
-  // editId,
 }) => {
   const [toggle, handleToggle] = useToggle(false);
   return (

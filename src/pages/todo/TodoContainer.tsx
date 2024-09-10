@@ -1,11 +1,14 @@
 import Modal from "@/components/custom/Modal";
 import { Button } from "@/components/ui/button";
 import AddTodoModal, { TodoFormValues } from "./AddTodoModal";
-import { axiosInstance } from "@/utils/config";
-import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import DataTable from "@/components/custom/DataTable";
 import TableAction from "@/components/custom/TableAction";
+import useTodoQuery from "@/query/todo/useTodoQuery";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { axiosInstance } from "@/utils/config";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export interface TodoType extends TodoFormValues {
   _id: string;
@@ -19,7 +22,28 @@ interface HeaderType {
   render?: (todo: TodoType) => JSX.Element | string;
 }
 
+//To get the todo by id function
+const updateTodoStatus = (id: string) => async () => {
+  const response = await axiosInstance({
+    method: "patch",
+    url: `/todos/toggle/status/${id}`,
+  });
+  return response;
+};
+
 const TodoContainer = () => {
+  const { todos: data } = useTodoQuery();
+  const queryClient = useQueryClient();
+
+  // To add the todo
+  const { mutateAsync } = useMutation({
+    mutationFn: (id: string) => updateTodoStatus(id)(),
+  });
+  const changeStatus = (id: any) => async () => {
+    await mutateAsync(id);
+    queryClient.invalidateQueries({ queryKey: ["getTodo"] });
+  };
+
   const headers: HeaderType[] = [
     {
       label: "Title",
@@ -38,7 +62,18 @@ const TodoContainer = () => {
     {
       label: "Status",
       render: (todo: TodoType) => {
-        return todo.isComplete ? "Incomplete" : "Completed";
+        return (
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={todo.isComplete}
+              onCheckedChange={changeStatus(todo._id)}
+              id="airplane-mode"
+            />
+            <Label htmlFor="airplane-mode">
+              {todo.isComplete ? "Completed" : "Incomplete"}
+            </Label>
+          </div>
+        );
       },
     },
     {
@@ -48,18 +83,6 @@ const TodoContainer = () => {
       },
     },
   ];
-  const getTodos = async <T extends TodoType>(): Promise<T[]> => {
-    const response = await axiosInstance({
-      method: "get",
-      url: "/todos",
-    });
-    return response?.data?.data;
-  };
-
-  const { data } = useQuery({
-    queryKey: ["getTodo"],
-    queryFn: getTodos,
-  });
 
   return (
     <>

@@ -8,6 +8,7 @@ import Profile from "@/pages/auth/Profile";
 import TodoContainer from "@/pages/todo/TodoContainer";
 import { useEffect } from "react";
 import { getToken } from "@/utils/config";
+import CategoryContainer from "@/pages/category/CategoryContainer";
 
 const IndexRoutes = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const IndexRoutes = () => {
             <Route path="dashboard" element={<h1>Dashboard...</h1>}></Route>
             <Route path="profile" element={<Profile />}></Route>
             <Route path="todo" element={<TodoContainer />}></Route>
+            <Route path="category" element={<CategoryContainer />}></Route>
           </Route>
         </Route>
       </Routes>

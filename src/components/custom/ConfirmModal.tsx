@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { axiosInstance } from "@/utils/config";
 import { toast } from "sonner";
+import useTodoQuery from "@/query/todo/useTodoQuery";
 
 interface ConfirmModalProps {
   handleToggle: () => void;
@@ -21,7 +22,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   deleteId,
 }) => {
   const queryClient = useQueryClient();
-
+  const {} = useTodoQuery(deleteId);
   const handleDelete = (deleteId: string) => async () => {
     try {
       const response = await mutateAsync(deleteId); // Pass the id to mutateAsync

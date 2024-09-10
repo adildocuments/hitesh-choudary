@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { todoSchema } from "@/schema/todoSchema";
 import { InferType } from "yup";
-import { axiosInstance } from "@/utils/config";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import useTodoQuery from "@/query/todo/useTodoQuery";
 
 interface AddTodoModalProps {
   handleToggle: () => void;
@@ -21,39 +21,13 @@ const initialValue = {
   description: "",
 };
 
-const addTodo = (editId: string) => async (payload: TodoFormValues) => {
-  const response = await axiosInstance({
-    method: editId ? "patch" : "post",
-    url: editId ? `/todos/${editId}` : "/todos",
-    data: payload,
-  });
-  console.log(response, "resposse update");
-  return response?.data;
-};
-
-const getTodoById = (editId: string) => async () => {
-  const response = await axiosInstance({
-    method: "get",
-    url: `/todos/${editId}`,
-  });
-  return response?.data?.data;
-};
-
 const AddTodoModal: React.FC<AddTodoModalProps> = ({
   handleToggle,
   editId,
 }) => {
   const queryClient = useQueryClient();
+  const { mutateAsync, data } = useTodoQuery(editId!);
 
-  const { mutateAsync } = useMutation({
-    mutationFn: addTodo(editId!),
-  });
-
-  const { data } = useQuery({
-    queryKey: ["getTodo", editId],
-    queryFn: getTodoById(editId!),
-    enabled: !!editId,
-  });
   const {
     control,
     handleSubmit,

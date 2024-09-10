@@ -37,7 +37,7 @@ export const getToken = async (navigate: any) => {
       // Do something with response data
       return response;
     },
-    function (error: AxiosError<ErrorResponse>) {
+    async function (error: AxiosError<ErrorResponse>) {
       if (error.response?.data) {
         const { statusCode, message } = error?.response?.data;
         switch (statusCode) {
@@ -47,7 +47,8 @@ export const getToken = async (navigate: any) => {
           default:
             toast.error(unexpectedMsg);
         }
-        myStore.clear();
+        console.log("error", error);
+        await myStore.clear();
         navigate("/login");
       }
 

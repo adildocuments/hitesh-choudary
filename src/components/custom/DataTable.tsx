@@ -26,6 +26,7 @@ const DataTable = <T extends HasId>({
   headers,
   rowData,
 }: DataTableProps<T>) => {
+  console.log(rowData, "reow");
   return (
     <>
       <Table>

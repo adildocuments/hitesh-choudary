@@ -26,10 +26,10 @@ const Drawer = () => {
         </li>
         <li>
           <Link
-            to="post"
+            to="category"
             className="block p-3 hover:bg-gray-700 border-b border-gray-600 hover:border-gray-400"
           >
-            Post
+            Cateogry
           </Link>
         </li>
       </ul>
